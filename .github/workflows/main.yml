@@ -14,9 +14,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
+
+      - name: Checkout code
+        uses: actions/checkout@v2
         
       - name: Run version increment script
-        run: ../../../increment_version.sh
+        run: increment_version.sh
 
       - name: Archive Source Files
         uses: actions/upload-artifact@v2
