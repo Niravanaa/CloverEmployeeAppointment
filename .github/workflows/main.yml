@@ -14,9 +14,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
-
-      - name: Grant execute permission to the script
-        run: chmod +x increment_version.sh
         
       - name: Run version increment script
         run: ./increment_version.sh
