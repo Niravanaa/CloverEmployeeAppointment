@@ -20,8 +20,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         
-      - name: Run version increment script
-        run: ./increment_version.sh
+      - name: Increment Semantic Version
+        run: |
+          #!/bin/bash
+        
+          if [[ "${GITHUB_EVENT_NAME}" == "push" && $(git log -1 --pretty=%B) == *"[MAJOR]"* ]]; then
+            ./gradlew incrementSemanticVersion --major
+          elif [[ "${GITHUB_EVENT_NAME}" == "push" && $(git log -1 --pretty=%B) == *"[MINOR]"* ]]; then
+            ./gradlew incrementSemanticVersion --minor
+          else
+            ./gradlew incrementSemanticVersion --patch
+          fi
 
       - name: Archive Source Files
         uses: actions/upload-artifact@v2
