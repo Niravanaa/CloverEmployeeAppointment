@@ -15,8 +15,8 @@ jobs:
         with:
           node-version: '16.x'
 
-      - name: Grant execute permission to the script
-        run: chmod +x ./increment_version.sh
+      - name: Checkout code
+        uses: actions/checkout@v2
         
       - name: Run version increment script
         run: ./increment_version.sh
