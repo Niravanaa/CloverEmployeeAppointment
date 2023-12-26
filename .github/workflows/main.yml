@@ -13,10 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Grant execute permission to the script
+        run: chmod +x increment_version.sh
+        
       - name: Run version increment script
-        run: |
-          chmod +x increment_version.sh
-          ./increment_version.sh
+        run: ./increment_version.sh
 
       - name: Archive Source Files
         uses: actions/upload-artifact@v2
