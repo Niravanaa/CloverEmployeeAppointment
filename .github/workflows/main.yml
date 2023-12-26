@@ -1,0 +1,40 @@
+name: Version Bump and Release
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Bump Version
+        run: ./gradlew incrementSemanticVersion --${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[MAJOR]') ? 'major' : github.event_name == 'push' && contains(github.event.head_commit.message, '[MINOR]') ? 'minor' : 'patch' }}
+      
+      - name: Archive Source Files
+        uses: actions/upload-artifact@v2
+        with:
+          name: source-code
+          path: .
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.bump-version.outputs.new_version }}
+          release_name: Release v${{ steps.bump-version.outputs.new_version }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Source Code
+        uses: actions/upload-artifact@v2
+        with:
+          name: source-code
+          path: .
