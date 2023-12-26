@@ -16,7 +16,7 @@ jobs:
           node-version: '16.x'
         
       - name: Run version increment script
-        run: increment_version.sh
+        run: ./increment_version.sh
 
       - name: Archive Source Files
         uses: actions/upload-artifact@v2
