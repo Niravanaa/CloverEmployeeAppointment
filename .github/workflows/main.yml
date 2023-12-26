@@ -1,6 +1,4 @@
 name: Version Bump and Release
-permissions:
-  contents: write
 
 on:
   push:
@@ -19,6 +17,13 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+          architecture: 'x64'
         
       - name: Set execute permission
         run: chmod +x ./gradlew
