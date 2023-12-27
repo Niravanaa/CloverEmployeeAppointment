@@ -16,6 +16,10 @@ jobs:
 
       - name: Check differences in gradle.properties
         run: |
+          # Set up git configurations
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+
           # Check differences between main and develop branches for gradle.properties
           git fetch origin develop
           git diff --exit-code origin/develop origin/main -- gradle.properties || {
