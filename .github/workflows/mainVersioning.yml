@@ -49,16 +49,16 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
       
-          # Fetch the latest changes for both branches
-          git fetch origin main:main
-          git fetch origin develop:develop
+          # Fetch the latest changes for develop and main without checking them out
+          git fetch origin main:main-remote
+          git fetch origin develop:develop-remote
       
           # Check differences in gradle.properties between main and develop
-          if ! git diff --quiet origin/develop origin/main -- gradle.properties; then
+          if ! git diff --quiet develop-remote main-remote -- gradle.properties; then
             echo "Differences found in gradle.properties. Proceeding with merge."
       
             # Checkout the gradle.properties file from main into a temporary branch without committing
-            git checkout -b temp-branch origin/main -- gradle.properties
+            git checkout -b temp-branch main-remote -- gradle.properties
       
             # Commit the changes to a temporary commit
             git commit -m "Merge gradle.properties from main into develop"
@@ -75,7 +75,6 @@ jobs:
           else
             echo "No differences found in gradle.properties. No action needed."
           fi
-
 
       - name: Create GitHub Package Release
         uses: actions/create-release@v1
