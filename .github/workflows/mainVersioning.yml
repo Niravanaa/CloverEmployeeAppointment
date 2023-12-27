@@ -44,9 +44,16 @@ jobs:
           git commit -m "Incremented minor version"
           git push
 
-      - name: Checkout code
-        uses: actions/checkout@v2
-        
+      - name: Create Develop Branch if it doesn't exist
+        run: |
+          git fetch origin
+          if ! git rev-parse --verify origin/develop; then
+            git checkout -b develop
+            git push origin develop
+          else
+            echo "Develop branch already exists."
+          fi
+          
       - name: Merge Main's Gradle Properties into Develop
         run: |
           git config --local user.email "actions@github.com"
@@ -71,7 +78,6 @@ jobs:
             git diff --cached
 
             echo "Changes staged for gradle.properties. Push to develop."
-            git pull origin main
             git push origin develop
           fi
 
