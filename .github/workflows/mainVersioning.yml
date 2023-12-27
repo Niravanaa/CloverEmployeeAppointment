@@ -21,12 +21,8 @@ jobs:
           CURRENT_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
           echo "Current Version: $CURRENT_VERSION"
           
-          # Split the version into major, minor, and patch components
-          MAJOR=$(echo "$CURRENT_VERSION" | cut -d'.' -f1)
-          MINOR=$(echo "$CURRENT_VERSION" | cut -d'.' -f2)
-          
-          # Reset the patch version to 0
-          UPDATED_VERSION="$MAJOR.$MINOR.0"
+          # Increment the minor version using awk and reset the patch to 0
+          UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. -v OFS=. '{$2+=1; $3=0; print}')
           
           # Replace the version line with the updated version in gradle.properties
           sed -i "s/^version=.*/version=$UPDATED_VERSION/" gradle.properties
