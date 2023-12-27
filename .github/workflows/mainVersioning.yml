@@ -19,30 +19,18 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
-      - name: Extract Base Version and Increment Minor Version
-        id: extract_and_increment_minor
+      - name: Read and Increment Minor Version
         run: |
-          # Extract base version from gradle.properties
-          BASE_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
-          echo "Base Version: $BASE_VERSION"
+          # Read the current version from gradle.properties
+          CURRENT_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
+          echo "Current Version: $CURRENT_VERSION"
 
-          # Split the base version into components
-          IFS='.' read -ra VERSION_PARTS <<< "$BASE_VERSION"
-          MAJOR="${VERSION_PARTS[0]}"
-          MINOR="${VERSION_PARTS[1]}"
-          PATCH="${VERSION_PARTS[2]}"
-
-          # Increment the minor version component
-          ((MINOR++))
-
-          # Form the updated version
-          UPDATED_VERSION="$MAJOR.$MINOR.$PATCH"
+          # Increment the minor version using awk
+          UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. '{$2++; OFS="."; print}')
 
           # Update the gradle.properties file with the new version
           sed -i "s/^version=.*$/version=$UPDATED_VERSION/" gradle.properties
           echo "Incremented Minor Version: $UPDATED_VERSION"
-
-          # Set the output for subsequent steps
           echo "::set-output name=NEW_VERSION::$UPDATED_VERSION"
 
       - name: Create GitHub Package Release
