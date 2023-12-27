@@ -14,20 +14,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Merge Main's Gradle Properties into Develop
+      - name: Check differences in gradle.properties
         run: |
-          # Set up git configurations
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-
-          # Fetch the latest changes
+          # Check differences between main and develop branches for gradle.properties
           git fetch origin develop
-
-          # Checkout the gradle.properties file from main branch
-          git checkout origin/main -- gradle.properties
-
-          # Commit and push only the gradle.properties file to develop
-          git checkout develop
-          git add gradle.properties
-          git commit -m "Merge gradle.properties from main into develop"
-          git push origin develop
+          git diff --exit-code origin/develop origin/main -- gradle.properties || {
+            echo "Differences found in gradle.properties. Proceeding with merge."
+            git checkout origin/main -- gradle.properties
+            git checkout develop
+            git add gradle.properties
+            git commit -m "Merge gradle.properties from main into develop"
+            git push origin develop
+          }
