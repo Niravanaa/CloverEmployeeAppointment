@@ -65,7 +65,7 @@ jobs:
             git checkout origin/main -- gradle.properties
 
             # Stage the changes
-            git add gradle.properties
+            git add --force gradle.properties
 
             # Commit changes
             git commit -m "Merge gradle.properties from main into develop"
