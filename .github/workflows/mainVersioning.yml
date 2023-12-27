@@ -50,7 +50,7 @@ jobs:
           git config --local user.name "GitHub Actions"
 
           # Fetch the latest changes for develop
-          git checkout -b develop
+          git fetch origin develop
 
           # Check differences in gradle.properties
           if git diff --exit-code origin/develop origin/main -- gradle.properties; then
