@@ -61,10 +61,6 @@ jobs:
             # Checkout the gradle.properties file from main into develop without committing
             git checkout origin/main -- gradle.properties
 
-            # Overwrite the gradle.properties file in the develop branch
-            git checkout develop
-            git checkout --theirs origin/main -- gradle.properties
-
             # Stage the changes
             git add gradle.properties
 
