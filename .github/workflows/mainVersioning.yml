@@ -48,32 +48,27 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-      
-          # Fetch the latest changes for develop and main without checking them out
-          git fetch origin main:main-remote
-          git fetch origin develop:develop-remote
-      
-          # Check differences in gradle.properties between main and develop
-          if ! git diff --quiet develop-remote main-remote -- gradle.properties; then
-            echo "Differences found in gradle.properties. Proceeding with merge."
-      
-            # Checkout the gradle.properties file from main into a temporary branch without committing
-            git checkout -b temp-branch main-remote -- gradle.properties
-      
-            # Commit the changes to a temporary commit
-            git commit -m "Merge gradle.properties from main into develop"
-      
-            # Merge the temporary branch into the develop branch
-            git checkout develop
-            git merge --no-ff --no-edit temp-branch
-      
-            # Push the updated gradle.properties file to the develop branch
-            git push origin develop
-      
-            # Clean up: Delete the temporary branch
-            git branch -D temp-branch
+
+          # Fetch the latest changes for develop
+          git checkout -b develop
+
+          # Check differences in gradle.properties
+          if git diff --exit-code origin/develop origin/main -- gradle.properties; then
+            echo "No differences found in gradle.properties."
           else
-            echo "No differences found in gradle.properties. No action needed."
+            echo "Differences found in gradle.properties. Proceeding with merge."
+
+            # Checkout the gradle.properties file from main into develop without committing
+            git checkout origin/main -- gradle.properties
+
+            # Stage the changes
+            git add gradle.properties
+
+            # Show the changes (for verification, optional step)
+            git diff --cached
+
+            echo "Changes staged for gradle.properties. Push to develop."
+            git push origin develop
           fi
 
       - name: Create GitHub Package Release
