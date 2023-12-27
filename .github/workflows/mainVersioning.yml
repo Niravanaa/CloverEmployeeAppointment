@@ -20,19 +20,20 @@ jobs:
           # Read the current version from gradle.properties
           CURRENT_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
           echo "Current Version: $CURRENT_VERSION"
-      
-          # Increment the minor version using awk and maintain the dots
-          UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. -v OFS=. '{$2+=1; print}')
-      
+          
+          # Split the version into major, minor, and patch components
+          MAJOR=$(echo "$CURRENT_VERSION" | cut -d'.' -f1)
+          MINOR=$(echo "$CURRENT_VERSION" | cut -d'.' -f2)
+          
+          # Reset the patch version to 0
+          UPDATED_VERSION="$MAJOR.$MINOR.0"
+          
           # Replace the version line with the updated version in gradle.properties
-          # Replace the version line with the updated version in a temporary file
-          sed "s/^version=.*/version=$UPDATED_VERSION/" gradle.properties > gradle.properties.tmp
-      
-          # Replace the original file with the updated temporary file
-          mv gradle.properties.tmp gradle.properties
+          sed -i "s/^version=.*/version=$UPDATED_VERSION/" gradle.properties
+          
           echo "Incremented Minor Version: $UPDATED_VERSION"
           echo "::set-output name=NEW_VERSION::$UPDATED_VERSION"
-      
+          
           # Output the updated version
           echo "Updated Version: $UPDATED_VERSION"
 
