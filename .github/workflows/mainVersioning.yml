@@ -71,6 +71,7 @@ jobs:
             git diff --cached
 
             echo "Changes staged for gradle.properties. Push to develop."
+            git pull origin main
             git push origin develop
           fi
 
