@@ -18,11 +18,15 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '11'
+          distribution: 'adopt'
 
       - name: Configure Git user
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
 
+      - name: Grant execute permission to gradlew
+        run: chmod +x ./gradlew
+  
       - name: Run Semantic Release
         run: ./gradlew semanticRelease
