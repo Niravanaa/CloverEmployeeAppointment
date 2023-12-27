@@ -7,7 +7,7 @@ on:
 
 jobs:
   release-minor:
-    if: ${{ github.event_name != 'workflow_run' && !startsWith(github.event.head_commit.message, 'Merge branch') }}
+    if: ${{ github.event_name != 'workflow_run' && !startsWith(github.event.head_commit.message, 'Merge branch') && !contains(steps.merge_diff.outputs.diff, '<<<<<<<') }}
     runs-on: ubuntu-latest
 
     steps:
