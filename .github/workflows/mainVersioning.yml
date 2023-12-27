@@ -50,15 +50,13 @@ jobs:
           git config --local user.name "GitHub Actions"
 
           # Fetch the latest changes for develop
-          git fetch origin develop
+          git fetch origin
 
           # Check differences in gradle.properties
           if git diff --exit-code origin/develop origin/main -- gradle.properties; then
             echo "No differences found in gradle.properties."
           else
             echo "Differences found in gradle.properties. Proceeding with merge."
-
-            git checkout -b develop
             
             # Checkout the gradle.properties file from main into develop without committing
             git checkout origin/main -- gradle.properties
