@@ -52,6 +52,9 @@ jobs:
           # Fetch the latest changes for develop
           git fetch origin develop
 
+          # Checkout the develop branch
+          git checkout develop
+
           # Check differences in gradle.properties
           if git diff --exit-code origin/develop origin/main -- gradle.properties; then
             echo "No differences found in gradle.properties."
@@ -64,10 +67,10 @@ jobs:
             # Stage the changes
             git add gradle.properties
 
-            # Show the changes (for verification, optional step)
-            git diff --cached
+            # Commit changes
+            git commit -m "Merge gradle.properties from main into develop"
 
-            echo "Changes staged for gradle.properties. Push to develop."
+            # Push to develop
             git push origin develop
           fi
 
