@@ -30,7 +30,11 @@ jobs:
           UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. -v OFS=. '{$2+=1; print}')
       
           # Replace the version line with the updated version in gradle.properties
-          sed -i "s/^version=.*/version=$UPDATED_VERSION/" gradle.properties
+          # Replace the version line with the updated version in a temporary file
+          sed "s/^version=.*/version=$UPDATED_VERSION/" gradle.properties > gradle.properties.tmp
+      
+          # Replace the original file with the updated temporary file
+          mv gradle.properties.tmp gradle.properties
           echo "Incremented Minor Version: $UPDATED_VERSION"
           echo "::set-output name=NEW_VERSION::$UPDATED_VERSION"
       
