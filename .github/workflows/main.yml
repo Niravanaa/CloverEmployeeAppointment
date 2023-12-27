@@ -1,0 +1,36 @@
+name: Update Version in Develop after Merge to Main
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  update-develop:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read Main Branch Version
+        id: read_main_version
+        run: |
+          # Read the current version from main branch's gradle.properties
+          MAIN_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
+          echo "Main Branch Gradle Version: $MAIN_VERSION"
+          echo "::set-output name=MAIN_VERSION::$MAIN_VERSION"
+
+      - name: Update Develop Branch Version
+        run: |
+          DEVELOP_VERSION=$(echo "${{ steps.read_main_version.outputs.MAIN_VERSION }}" | awk -F. -v OFS=. '{$2+=1; print}')
+          sed -i "s/^version=.*/version=$DEVELOP_VERSION/" gradle.properties
+          echo "Updated Develop Branch Version: $DEVELOP_VERSION"
+
+          # Commit changes to develop branch
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add gradle.properties
+          git commit -m "Update version in develop after merge to main"
+          git push origin develop
