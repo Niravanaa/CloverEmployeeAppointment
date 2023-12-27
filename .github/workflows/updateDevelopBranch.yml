@@ -1,4 +1,4 @@
-name: Merge Gradle Properties from Main into Develop
+name: Update Gradle Properties from Main to Develop
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  merge-gradle-properties:
+  update-gradle-properties:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
@@ -14,20 +14,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Check differences in gradle.properties
+      - name: Merge Main's Gradle Properties into Develop
         run: |
-          # Set up git configurations
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
 
-          # Check differences between main and develop branches for gradle.properties
+          # Fetch the latest changes for develop
           git fetch origin develop
+
+          # Check differences in gradle.properties
           if git diff --exit-code origin/develop origin/main -- gradle.properties; then
-            echo "No differences found in gradle.properties. Nothing to merge."
+            echo "No differences found in gradle.properties."
           else
             echo "Differences found in gradle.properties. Proceeding with merge."
-            git checkout origin/main -- gradle.properties
+
+            # Checkout the gradle.properties file from main into develop without committing
+            git checkout origin/main -- gradle.properties --ours
+
+            # Overwrite the gradle.properties file in the develop branch
+            git checkout develop
+            git checkout --theirs origin/main -- gradle.properties
+
+            # Stage the changes
             git add gradle.properties
-            git commit -m "Merge gradle.properties from main into develop"
-            git push origin develop --force
+
+            # Show the changes (for verification, optional step)
+            git diff --cached
+
+            echo "Changes staged for gradle.properties. Push to develop."
+            git push origin develop
           fi
