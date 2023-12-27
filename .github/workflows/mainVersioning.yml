@@ -43,16 +43,6 @@ jobs:
           git add gradle.properties
           git commit -m "Incremented minor version"
           git push
-
-      - name: Create Develop Branch if it doesn't exist
-        run: |
-          git fetch origin
-          if ! git rev-parse --verify origin/develop; then
-            git checkout -b develop
-            git push origin develop
-          else
-            echo "Develop branch already exists."
-          fi
         
       - name: Merge Main's Gradle Properties into Develop
         run: |
@@ -69,6 +59,8 @@ jobs:
           else
             echo "Differences found in gradle.properties. Proceeding with merge."
 
+            git checkout -b develop
+            
             # Checkout the gradle.properties file from main into develop without committing
             git checkout origin/main -- gradle.properties
 
