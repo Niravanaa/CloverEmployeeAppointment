@@ -7,7 +7,7 @@ on:
 
 jobs:
   release-patch:
-    if: ${{ github.event_name != 'workflow_run' && github.event.head_commit.message != null && !contains(github.event.head_commit.message, 'Merge branch') }}
+    if: ${{ github.event_name != 'workflow_run' && !contains(github.event.head_commit.message, 'Merge branch') }}
     runs-on: ubuntu-latest
 
     steps:
