@@ -51,7 +51,6 @@ jobs:
 
           # Fetch the latest changes for develop
           git fetch origin develop
-          git branch -b
 
           # Check differences in gradle.properties
           if git diff --exit-code origin/develop origin/main -- gradle.properties; then
