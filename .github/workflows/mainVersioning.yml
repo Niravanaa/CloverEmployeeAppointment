@@ -13,24 +13,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
-      - name: Check for merge differences in gradle.properties
-        id: merge_diff
-        run: |
-          # Fetch the latest changes for develop
-          git fetch origin develop
-
-          # Get the differences between develop and main for gradle.properties
-          git diff --exit-code origin/develop origin/main -- gradle.properties > merge_diff.txt
-          cat merge_diff.txt
-          echo "::set-output name=diff::$(cat merge_diff.txt)"
-
-      - name: Check Merge Conflict
-        if: ${{ github.event_name != 'workflow_run' && !contains(github.event.head_commit.message, 'Merge branch') && contains(steps.merge_diff.outputs.diff, '<<<<<<<') }}
-        run: |
-          echo "Merge conflict detected in gradle.properties. Skipping workflow execution."
-          exit 1
-          
+        
       - name: Read and Increment Minor Version
         id: increment_minor
         run: |
