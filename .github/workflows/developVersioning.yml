@@ -14,24 +14,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get gradle.properties from main branch
-        run: |
-          MAIN_GRADLE_PROPERTIES=$(git show main:gradle.properties)
-          echo "$MAIN_GRADLE_PROPERTIES" > main-gradle.properties
-
-      - name: Increment Patch Version
+      - name: Read and Increment Patch Version
         id: increment_patch
         run: |
-          # Read the current version from main-gradle.properties
-          CURRENT_VERSION=$(grep '^version=' main-gradle.properties | cut -d'=' -f2)
-          echo "Current Version (from main branch): $CURRENT_VERSION"
-
+          # Read the current version from gradle.properties
+          CURRENT_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
+          echo "Current Version: $CURRENT_VERSION"
+      
           # Increment the patch version using awk and maintain the dots
           UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. -v OFS=. '{$3+=1; print}')
-
-          # Output the incremented version
+      
+          # Replace the version line with the updated version in gradle.properties
+          # Replace the version line with the updated version in a temporary file
+          sed "s/^version=.*/version=$UPDATED_VERSION/" gradle.properties > gradle.properties.tmp
+      
+          # Replace the original file with the updated temporary file
+          mv gradle.properties.tmp gradle.properties
           echo "Incremented Patch Version: $UPDATED_VERSION"
           echo "::set-output name=NEW_VERSION::$UPDATED_VERSION"
+      
+          # Output the updated version
+          echo "Updated Version: $UPDATED_VERSION"
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add gradle.properties
+          git commit -m "Incremented patch version"
+          git push
 
       - name: Create GitHub Package Release
         uses: actions/create-release@v1
