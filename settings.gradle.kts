@@ -14,5 +14,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Employee Appointment Maker "
-include(":app")
+include(":app") 
  
