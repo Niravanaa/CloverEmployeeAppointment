@@ -20,7 +20,7 @@ jobs:
           # Read the current version from gradle.properties
           CURRENT_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
           echo "Current Version: $CURRENT_VERSION"
-          echo github.event.head_commit.message
+          echo "Commit Message: ${{ github.event.head_commit.message }}"
       
           # Increment the patch version using awk and maintain the dots
           UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. -v OFS=. '{$3+=1; print}')
