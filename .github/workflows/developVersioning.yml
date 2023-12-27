@@ -7,12 +7,11 @@ on:
 
 jobs:
   release-patch:
-    if: |
-      github.event_name != 'workflow_run' &&
+    if: ${{ github.event_name != 'workflow_run' &&
       github.event.commits[0].distinct &&
       github.event.commits[0].message != null &&
       contains(github.event.commits[0].message, 'Merge pull request') == false &&
-      contains(github.event.commits[0].message, 'Merge branch') == false
+      contains(github.event.commits[0].message, 'Merge branch') == false }}
     runs-on: ubuntu-latest
 
     steps:
