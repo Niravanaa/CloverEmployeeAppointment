@@ -27,7 +27,7 @@ jobs:
           echo "Current Version: $CURRENT_VERSION"
 
           # Increment the minor version using awk and maintain the dots
-          UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. '{split($2,a,"."); $2=a[1]+1 "." a[2] "." a[3]}1')
+          UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. -v OFS=. '{$2+=1; print}')
 
           # Update the gradle.properties file with the new version
           sed -i "s/^version=.*$/version=$UPDATED_VERSION/" gradle.properties
