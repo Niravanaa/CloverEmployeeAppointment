@@ -11,8 +11,8 @@ jobs:
       github.event_name != 'workflow_run' &&
       github.event.commits[0].distinct &&
       github.event.commits[0].message != null &&
-      github.event.commits[0].message.indexOf('Merge pull request') == -1 &&
-      github.event.commits[0].message.indexOf('Merge branch') == -1
+      contains(github.event.commits[0].message, 'Merge pull request') == false &&
+      contains(github.event.commits[0].message, 'Merge branch') == false
     runs-on: ubuntu-latest
 
     steps:
