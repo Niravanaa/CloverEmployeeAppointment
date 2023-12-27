@@ -41,6 +41,10 @@ jobs:
         env:
           TAG: ${{ steps.latest_tag.outputs.TAG }}
 
+      - name: Grant execute permission to gradlew
+        run: chmod +x ./gradlew
+        
+    # Rest of your version bumping logic
       - name: Bump version
         id: bump_version
         run: |
