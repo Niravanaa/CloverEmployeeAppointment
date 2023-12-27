@@ -48,28 +48,34 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-
-          # Fetch the latest changes for develop
-          git fetch origin
-
-          # Check differences in gradle.properties
-          if git diff --exit-code origin/develop origin/main -- gradle.properties; then
-            echo "No differences found in gradle.properties."
-          else
+      
+          # Fetch the latest changes for both branches
+          git fetch origin main:main
+          git fetch origin develop:develop
+      
+          # Check differences in gradle.properties between main and develop
+          if ! git diff --quiet origin/develop origin/main -- gradle.properties; then
             echo "Differences found in gradle.properties. Proceeding with merge."
-            
-            # Checkout the gradle.properties file from main into develop without committing
-            git checkout origin/main -- gradle.properties
-
-            # Stage the changes
-            git add gradle.properties
-
-            # Show the changes (for verification, optional step)
-            git diff --cached
-
-            echo "Changes staged for gradle.properties. Push to develop."
+      
+            # Checkout the gradle.properties file from main into a temporary branch without committing
+            git checkout -b temp-branch origin/main -- gradle.properties
+      
+            # Commit the changes to a temporary commit
+            git commit -m "Merge gradle.properties from main into develop"
+      
+            # Merge the temporary branch into the develop branch
+            git checkout develop
+            git merge --no-ff --no-edit temp-branch
+      
+            # Push the updated gradle.properties file to the develop branch
             git push origin develop
+      
+            # Clean up: Delete the temporary branch
+            git branch -D temp-branch
+          else
+            echo "No differences found in gradle.properties. No action needed."
           fi
+
 
       - name: Create GitHub Package Release
         uses: actions/create-release@v1
