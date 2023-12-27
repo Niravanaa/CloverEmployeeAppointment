@@ -1,4 +1,4 @@
-name: Version Bump and Release
+name: Semantic Release
 
 on:
   push:
@@ -7,58 +7,26 @@ on:
       - develop
 
 jobs:
-  bump-version:
+  release:
     runs-on: ubuntu-latest
-    steps:
-      - name: Use Node.js 16
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16.x'
 
+    steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v2
         with:
+          java-version: '11'
           distribution: 'adopt'
-          java-version: '17'
-          architecture: 'x64'
-        
-      - name: Set execute permission
-        run: chmod +x ./gradlew
 
-      - name: Increment Semantic Version
+      - name: Configure Git user
         run: |
-          #!/bin/bash
-        
-          if [[ "${GITHUB_EVENT_NAME}" == "push" && $(git log -1 --pretty=%B) == *"[MAJOR]"* ]]; then
-            ./gradlew incrementSemanticVersion --major
-          elif [[ "${GITHUB_EVENT_NAME}" == "push" && $(git log -1 --pretty=%B) == *"[MINOR]"* ]]; then
-            ./gradlew incrementSemanticVersion --minor
-          else
-            ./gradlew incrementSemanticVersion --patch
-          fi
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
 
-      - name: Archive Source Files
-        uses: actions/upload-artifact@v2
-        with:
-          name: source-code
-          path: .
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.bump-version.outputs.new_version }}
-          release_name: Release v${{ steps.bump-version.outputs.new_version }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Source Code
-        uses: actions/upload-artifact@v2
-        with:
-          name: source-code
-          path: .
+      - name: Grant execute permission to gradlew
+        run: chmod +x ./gradlew
+  
+      - name: Run Semantic Release
+        run: ./gradlew semanticRelease
