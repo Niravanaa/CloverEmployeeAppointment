@@ -29,7 +29,7 @@ jobs:
             echo "Differences found in gradle.properties. Proceeding with merge."
 
             # Checkout the gradle.properties file from main into develop without committing
-            git checkout origin/main -- gradle.properties --ours
+            git checkout origin/main -- gradle.properties
 
             # Overwrite the gradle.properties file in the develop branch
             git checkout develop
