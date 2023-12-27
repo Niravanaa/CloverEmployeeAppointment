@@ -7,6 +7,7 @@ on:
 
 jobs:
   release-minor:
+    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
 
     steps:
@@ -41,6 +42,13 @@ jobs:
           # Output the updated version
           echo "Updated Version: $UPDATED_VERSION"
 
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add gradle.properties
+          git commit -m "Incremented minor version"
+          git push
 
       - name: Create GitHub Package Release
         uses: actions/create-release@v1
