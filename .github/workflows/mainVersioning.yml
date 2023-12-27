@@ -29,8 +29,8 @@ jobs:
           # Increment the minor version using awk and maintain the dots
           UPDATED_VERSION=$(echo "$CURRENT_VERSION" | awk -F. -v OFS=. '{$2+=1; print}')
 
-          # Update the gradle.properties file with the new version
-          sed -i "s/^version=.*$/version=$UPDATED_VERSION/" gradle.properties
+          # Replace the version line with the updated version in gradle.properties
+          sed -i "s/^version=.*/version=$UPDATED_VERSION/" gradle.properties
           echo "Incremented Minor Version: $UPDATED_VERSION"
           echo "::set-output name=NEW_VERSION::$UPDATED_VERSION"
 
