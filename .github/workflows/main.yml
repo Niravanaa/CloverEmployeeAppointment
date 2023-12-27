@@ -17,66 +17,12 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '17'
-          distribution: 'adopt'
+          java-version: '11'
 
-      - name: Get latest tag
-        id: latest_tag
-        run: echo ::set-output name=TAG::$(git describe --abbrev=0 --tags)
-
-      - name: Determine version bump
-        id: version_bump
+      - name: Configure Git user
         run: |
-          TAG=${{ steps.latest_tag.outputs.TAG }}
-          LOG=$(git log $TAG..HEAD --oneline)
-          if [[ $LOG == *"[MAJOR]"* ]]; then
-            echo "major"
-          elif [[ $LOG == *"[MINOR]"* ]]; then
-            echo "minor"
-          elif [[ $LOG == *"[PATCH]"* ]]; then
-            echo "patch"
-          else
-            echo "none"
-          fi
-        env:
-          TAG: ${{ steps.latest_tag.outputs.TAG }}
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
 
-      - name: Grant execute permission to gradlew
-        run: chmod +x ./gradlew
-        
-    # Rest of your version bumping logic
-      - name: Bump version
-        id: bump_version
-        run: |
-          VERSION=$(./gradlew currentVersion -q)
-          BUMP=${{ steps.version_bump.outputs }}
-          case $BUMP in
-            "major")
-              NEW_VERSION=$(semver $VERSION -i major)
-              ;;
-            "minor")
-              NEW_VERSION=$(semver $VERSION -i minor)
-              ;;
-            "patch")
-              NEW_VERSION=$(semver $VERSION -i patch)
-              ;;
-            *)
-              echo "No version bump found."
-              exit 1
-              ;;
-          esac
-          echo "New version: $NEW_VERSION"
-          echo "::set-output name=NEW_VERSION::$NEW_VERSION"
-
-      - name: Create GitHub release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.bump_version.outputs.NEW_VERSION }}
-          release_name: Release ${{ steps.bump_version.outputs.NEW_VERSION }}
-          body: |
-            Automatic release for version ${{ steps.bump_version.outputs.NEW_VERSION }}
-          draft: false
-          prerelease: false
+      - name: Run Semantic Release
+        run: ./gradlew semanticRelease
