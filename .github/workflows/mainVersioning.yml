@@ -44,6 +44,9 @@ jobs:
           git commit -m "Incremented minor version"
           git push
 
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
       - name: Merge Main's Gradle Properties into Develop
         run: |
           git config --local user.email "actions@github.com"
