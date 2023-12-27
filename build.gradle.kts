@@ -2,5 +2,10 @@
 plugins {
     id("com.android.application") version "8.2.0" apply false
     id("org.jetbrains.kotlin.android") version "1.9.10" apply false
-    id("com.glovoapp.semantic-versioning") version "0.1.24"
+    id("io.github.gradle-semantic-release") version "1.8.0"
+}
+
+semanticRelease {
+    githubToken = project.findProperty("github.token")?.toString() ?: ""
+    releaseBranches = listOf("main", "develop") // Set branches for releasing
 }
